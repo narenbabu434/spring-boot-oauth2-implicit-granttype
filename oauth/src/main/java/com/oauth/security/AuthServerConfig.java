@@ -33,7 +33,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 	@Value("${oauth.redirectUrl}")
 	String redirectUri;
 
-	@Value("${oauth.redirectUrl}")
+	@Value("${oauth.clientId}")
 	String clientId;
 
 	@Value("${oauth.scope}")
@@ -45,6 +45,12 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 	@Value("${oauth.accessTokenValidity.inSeconds}")
 	String accessTokenValidityInSeconds;
 
+	@Value("${oauth.secret}")
+	String secret;
+
+	@Value("${oauth.authorties}")
+	String authroties;
+
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
 		endpoints.tokenStore(tokenStore).authenticationManager(authenticationManager)
 				.userDetailsService(userDetailsService).tokenEnhancer(customTokenEnricher);
@@ -53,13 +59,15 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
 
-		security.tokenKeyAccess("isAnonymous() || hasRole('ROLE_USER')");
+		security.tokenKeyAccess("permitAll()").checkTokenAccess("hasRole('TRUSTED_CLIENT')")
+				.allowFormAuthenticationForClients();
 
 	}
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-		clients.inMemory().withClient(clientId).authorizedGrantTypes(grantType).scopes(scope).redirectUris(redirectUri)
+		clients.inMemory().withClient(clientId).secret(secret).authorizedGrantTypes(grantType.split(","))
+				.scopes(scope.split(",")).redirectUris(redirectUri).authorities(authroties)
 				.accessTokenValiditySeconds(Integer.parseInt(accessTokenValidityInSeconds)).autoApprove(true);
 	}
 
