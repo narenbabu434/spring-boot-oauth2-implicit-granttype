@@ -1,7 +1,5 @@
 package com.oauth.api;
 
-import java.security.Principal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +15,6 @@ public class UserController {
 
 	@Autowired
 	UserService userService;
-	
-	 @RequestMapping("/")
-	    public Principal resource(Principal principal) {
-	        return principal;
-	    }
-
 	
 	@RequestMapping(path="/user/create")
 	public UserTO createUser(@RequestBody UserTO userTo) {
